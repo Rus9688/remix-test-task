@@ -1,4 +1,5 @@
 import {useTranslation} from 'react-i18next';
+import {useForm, Path, PathValue} from 'react-hook-form';
 
 import {Box, Grid2, InputAdornment, MenuItem} from '@mui/material';
 
@@ -7,12 +8,41 @@ import {useQueryCategoriesList} from '~/services/categories';
 import {AppInput} from '~/global/components/app-input';
 import {AppInputSwitch} from '~/global/components/app-input-switch';
 
-//
-//
+interface FormValues {
+  title: {ar: string; en: string};
+  description: {ar: string; en: string};
+  categoryId: string;
+  sku: string;
+  quantity: string;
+  price: string;
+  priceSale: string;
+  isActive: boolean;
+}
 
 export const ProductsForm = () => {
   const {t} = useTranslation(['common', 'products']);
   const categories = useQueryCategoriesList();
+  const {watch, setValue} = useForm<FormValues>({
+    defaultValues: {
+      title: {ar: '', en: ''},
+      description: {ar: '', en: ''},
+      categoryId: '',
+      sku: '',
+      quantity: '',
+      price: '',
+      priceSale: '',
+      isActive: false,
+    },
+  });
+
+  const formValues = watch();
+
+  const handleInputChange = <T extends Path<FormValues>>(
+    fieldName: T,
+    value: PathValue<FormValues, T>,
+  ) => {
+    setValue(fieldName, value);
+  };
 
   return (
     <>
@@ -56,8 +86,9 @@ export const ProductsForm = () => {
         name="categoryId"
         label={t('products:category')}
         variant="filled"
-        sx={{flex: 1}}
         select
+        value={formValues.categoryId || ''}
+        onChange={e => handleInputChange('categoryId', e.target.value)}
       >
         {!categories.isFetched ? (
           <MenuItem disabled>Loading categories...</MenuItem>
@@ -82,6 +113,8 @@ export const ProductsForm = () => {
             variant="filled"
             type="tel"
             sx={{flex: 1}}
+            value={formValues.quantity}
+            onChange={(e) => handleInputChange('quantity', e.target.value)}
           />
         </Grid2>
 
@@ -92,6 +125,8 @@ export const ProductsForm = () => {
             variant="filled"
             type="tel"
             sx={{flex: 1}}
+            value={formValues.price}
+            onChange={(e) => handleInputChange('price', e.target.value)}
             slotProps={{
               input: {
                 startAdornment: <InputAdornment position="start">$</InputAdornment>,
@@ -105,6 +140,8 @@ export const ProductsForm = () => {
             variant="filled"
             type="tel"
             sx={{flex: 1}}
+            value={formValues.priceSale}
+            onChange={(e) => handleInputChange('priceSale', e.target.value)}
             slotProps={{
               input: {
                 startAdornment: <InputAdornment position="start">$</InputAdornment>,
