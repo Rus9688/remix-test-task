@@ -11,6 +11,7 @@ import {renderToPipeableStream} from 'react-dom/server';
 import {createInstance, i18n as I18n} from 'i18next';
 import {I18nextProvider, initReactI18next} from 'react-i18next';
 import Backend from 'i18next-fs-backend';
+import {createReadableStreamFromReadable} from '@remix-run/node';
 
 import {ThemeProvider} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -80,7 +81,7 @@ const handleBotRequest = (
           responseHeaders.set('Content-Type', 'text/html');
 
           resolve(
-            new Response(bodyWithStyles as any, {
+            new Response(createReadableStreamFromReadable(reactBody), {
               headers: responseHeaders,
               status: didError ? 500 : responseStatusCode,
             }),
@@ -133,7 +134,7 @@ const handleBrowserRequest = (
           responseHeaders.set('Content-Type', 'text/html');
 
           resolve(
-            new Response(bodyWithStyles as any, {
+            new Response(createReadableStreamFromReadable(reactBody), {
               headers: responseHeaders,
               status: didError ? 500 : responseStatusCode,
             }),

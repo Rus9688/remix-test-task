@@ -31,17 +31,19 @@ export const MuiDocument = withEmotionCache(({children, title}: DocumentProps, e
 
   // Only executed on client
   useEnhancedEffect(() => {
-    // re-link sheet container
+    // Re-link sheet container
     emotionCache.sheet.container = document.head;
-    // re-inject tags
-    const tags = emotionCache.sheet.tags;
+
+    // Get the current style tags
+    const tags = emotionCache.sheet.tags as HTMLStyleElement[];
+
     emotionCache.sheet.flush();
-    tags.forEach(tag => {
-      (emotionCache.sheet as any)._insertTag(tag);
-    });
-    // reset cache to reapply global styles
+
+    // Re-hydrate using the public API method
+    emotionCache.sheet.hydrate(tags);
+
+    // Reset to reapply global styles
     clientStyleData.reset();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
